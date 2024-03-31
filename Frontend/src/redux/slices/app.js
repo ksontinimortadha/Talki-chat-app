@@ -27,6 +27,9 @@ const slice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    setRoomId(state, action) {
+      state.room_id = action.payload.room_id;
+    },
     fetchUser(state, action) {
       state.user = action.payload.user;
     },
@@ -152,3 +155,69 @@ export const SelectConversation = ({ room_id }) => {
     dispatch(slice.actions.selectConversation({ room_id }));
   };
 };
+
+export const FetchUserProfile = () => {
+  return async (dispatch, getState) => {
+    axios
+      .get("/user/get-me", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        dispatch(slice.actions.fetchUser({ user: response.data.data }));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+};
+
+/* export const UpdateUserProfile = (formValues) => {
+  return async (dispatch, getState) => {
+    const file = formValues.avatar;
+
+    const key = v4();
+
+    try {
+      S3.getSignedUrl(
+        "putObject",
+        { Bucket: S3_BUCKET_NAME, Key: key, ContentType: `image/${file.type}` },
+        async (_err, presignedURL) => {
+          await fetch(presignedURL, {
+            method: "PUT",
+
+            body: file,
+
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+    axios
+      .patch(
+        "/user/update-me",
+        { ...formValues, avatar: key },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getState().auth.token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        dispatch(slice.actions.updateUser({ user: response.data.data }));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+}; */

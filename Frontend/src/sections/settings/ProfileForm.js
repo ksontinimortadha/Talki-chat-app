@@ -1,20 +1,26 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { Button, Stack } from "@mui/material";
 import { RHFTextField } from "../../components/hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProfileForm = () => {
+   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.app);
+
   const ProfileSchema = Yup.object().shape({
-    firstName: Yup.string().required("Name is required"),
+    firstName: Yup.string().required("First Name is required"),
+    lastName: Yup.string().required("Last Name is required"),
     about: Yup.string().required("About is required"),
     avatarUrl: Yup.string().required("Avatar is required").nullable(true),
   });
 
   const defaultValues = {
-    name: "",
+    firstName: user?.firstName,
+    lastName: user?.lastName,
     about: "",
   };
 
@@ -25,22 +31,43 @@ const ProfileForm = () => {
 
   const {
     reset,
+    watch,
+    control,
     setValue,
-    setError,
     handleSubmit,
+    formState: { isSubmitting, isSubmitSuccessful },
   } = methods;
 
+  const values = watch();
 
-   useCallback(
+  /* const onSubmit = async (data) => {
+    try {
+      //   Send API request
+      console.log("DATA", data);
+      dispatch(
+        UpdateUserProfile({
+          firstName: data?.firstName,
+          about: data?.about,
+          avatar: file,
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }; */
+
+  const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
+
+      setFile(file);
 
       const newFile = Object.assign(file, {
         preview: URL.createObjectURL(file),
       });
 
       if (file) {
-        setValue("avatarUrl", newFile, { shouldValidate: true });
+        setValue("avatar", newFile, { shouldValidate: true });
       }
     },
     [setValue]
@@ -69,6 +96,11 @@ const ProfileForm = () => {
             helperText={"This name is visible to your contacts"}
             name="firstName"
             label="First Name"
+          />
+          <RHFTextField
+            helperText={"This name is visible to your contacts"}
+            name="lastName"
+            label="Last Name"
           />
           <RHFTextField multiline rows={3} name="about" label="About" />
         </Stack>

@@ -7,18 +7,20 @@ import SharedMessages from "../../components/SharedMessages";
 import StarredMessages from "../../components/StarredMessages";
 import { useSelector } from "react-redux";
 import NoChat from "../../assets/Illustration/NoChat";
+import { useSearchParams } from "react-router-dom";
 
 const GeneralApp = () => {
   const theme = useTheme();
   const { room_id, chat_type } = useSelector((state) => state.app);
-  const [showContact, setShowContact] = useState(false); // State to manage whether to show Contact or not
+
+  const [showContact, setShowContact] = useState(false);
   const [sidebarType, setSidebarType] = useState("CONTACT");
   const toggleContact = () => {
-    setShowContact(!showContact); // Toggle the value of showContact state
+    setShowContact(!showContact);
   };
 
   const updateSidebarType = (newType) => {
-    setSidebarType(newType); // Update the sidebar type
+    setSidebarType(newType);
   };
 
   return (

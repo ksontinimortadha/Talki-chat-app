@@ -47,7 +47,7 @@ const Header = ({ toggleContact }) => {
             >
               <Avatar
                 alt={current_conversation?.name}
-                src={current_conversation?.img}
+               /*  src={current_conversation?.img} */
               />
             </StyledBadge>
           </Box>

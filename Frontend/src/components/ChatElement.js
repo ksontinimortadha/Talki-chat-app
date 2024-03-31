@@ -42,15 +42,17 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const ChatElement = ({ id, name, img, msg, time, unread, online }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
-   const { room_id } = useSelector((state) => state.app);
-   const selectedChatId = room_id?.toString();
+  const { room_id } = useSelector((state) => state.app);
+  const selectedChatId = room_id?.toString();
 
-   let isSelected = +selectedChatId === id;
+  let isSelected = +selectedChatId === id;
 
-   if (!selectedChatId) {
-     isSelected = false;
-   }
+  if (!selectedChatId) {
+    isSelected = false;
+  }
 
+  // Convert msg to string if it's not already
+  const messageText = typeof msg === "string" ? msg : "";
   return (
     <Box
       onClick={() => {
@@ -72,7 +74,7 @@ const ChatElement = ({ id, name, img, msg, time, unread, online }) => {
         justifyContent="space-between"
       >
         <Stack direction="row" spacing={2}>
-          {online ? (
+          {/* {online ? (
             <StyledBadge
               overlap="circular"
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -82,11 +84,12 @@ const ChatElement = ({ id, name, img, msg, time, unread, online }) => {
             </StyledBadge>
           ) : (
             <Avatar alt={name} src={img} />
-          )}
+          )} */}
 
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{name}</Typography>
-            <Typography variant="caption">{msg}</Typography>
+            {/* Provide messageText as children */}
+            <Typography variant="caption">{messageText}</Typography>
           </Stack>
         </Stack>
         <Stack spacing={2} alignItems="center">

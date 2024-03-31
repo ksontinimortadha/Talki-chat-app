@@ -35,7 +35,6 @@ exports.register = async (req, res, next) => {
     });
   } else if (existing_user) {
     // if not verified than update prev one
-
     await User.findOneAndUpdate({ email: email }, filteredBody, {
       new: true,
       validateModifiedOnly: true,

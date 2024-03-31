@@ -127,14 +127,14 @@ const Chats = () => {
             sx={{ flexGrow: 1, overflowY: "scroll", height: "100%" }}
           >
             <Stack spacing={2.5}>
-              {/*All Chat List */}
+              {/* All Chat List */}
               <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                 All Chats
               </Typography>
               {conversations
                 .filter((el) => !el.pinned)
                 .map((el, idx) => {
-                  return <ChatElement {...el} />;
+                  return <ChatElement key={el.id} {...el} />;
                 })}
             </Stack>
           </Stack>

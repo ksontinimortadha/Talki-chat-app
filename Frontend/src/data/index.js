@@ -33,10 +33,6 @@ const Nav_Buttons = [
     index: 1,
     icon: <Users />,
   },
-  {
-    index: 2,
-    icon: <Phone />,
-  },
 ];
 
 const Nav_Setting = [

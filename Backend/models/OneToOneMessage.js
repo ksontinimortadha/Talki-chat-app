@@ -9,6 +9,9 @@ const oneToOneMessageSchema = new mongoose.Schema({
   ],
   messages: [
     {
+      id: {
+        type: String,
+      },
       to: {
         type: mongoose.Schema.ObjectId,
         ref: "User",

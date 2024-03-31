@@ -138,13 +138,6 @@ const ChatInput = ({
     />
   );
 };
-function linkify(text) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(
-    urlRegex,
-    (url) => `<a href="${url}" target="_blank">${url}</a>`
-  );
-}
 
 function containsUrl(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -237,7 +230,7 @@ const Footer = () => {
             <IconButton
               onClick={() => {
                 socket.emit("text_message", {
-                  message: linkify(value),
+                  message: value,
                   conversation_id: room_id,
                   from: user_id,
                   to: current_conversation.user_id,

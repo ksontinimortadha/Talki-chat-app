@@ -10,8 +10,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { DotsThreeVertical, DownloadSimple, Image } from "phosphor-react";
-import React from "react";
+import React, { useState } from "react";
 import { Message_options } from "../../data";
+import { socket } from "../../socket";
+import { useSelector } from "react-redux";
 
 const DocMsg = ({ el, menu }) => {
   const theme = useTheme();
@@ -191,8 +193,9 @@ const MediaMsg = ({ el, menu }) => {
   );
 };
 
-const TextMsg = ({ el, menu }) => {
+const TextMsg = ({ id, el, menu }) => {
   const theme = useTheme();
+
   return (
     <Stack direction="row" justifyContent={el.incoming ? "start" : "end"}>
       <Box
@@ -210,10 +213,11 @@ const TextMsg = ({ el, menu }) => {
           color={el.incoming ? theme.palette.text : "white"}
         >
           {el.message}
+          {console.log("message id", el.id)}
         </Typography>
       </Box>
       {/* dots */}
-      {menu && <MessageOption />}
+      {menu && <MessageOption messageId={el.id} />}
     </Stack>
   );
 };
@@ -231,15 +235,38 @@ const Timeline = ({ el }) => {
   );
 };
 
-const MessageOption = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+const MessageOption = ({ messageId }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [messageDeleted, setMessageDeleted] = useState(false);
+
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleDeleteMessage = () => {
+    // Emit the 'delete_message' event with the messageId
+   socket.emit("delete_message", messageId, (response) => {
+     if (response && response.success) {
+       console.log(`Message with ID ${messageId} has been deleted`);
+       setMessageDeleted(true); // Update state to show "Message has been deleted"
+     } else {
+       console.error(
+         `Error deleting message with ID ${messageId}:`,
+         response && response.error
+       );
+       // Handle error, show an error message, etc.
+     }
+   });
+
+    handleClose(); // Close the menu after emitting
+  };
+
   return (
     <>
       <DotsThreeVertical
@@ -260,13 +287,28 @@ const MessageOption = () => {
         }}
       >
         <Stack spacing={1} px={1}>
-          {Message_options.map((el, i) => (
-            <MenuItem key={i} onClick={handleClose}>
-              {el.title}
+          {Message_options.map((option, index) => (
+            <MenuItem key={index} onClick={handleClose}>
+              {option.title === "Delete Message" ? (
+                <Typography
+                  sx={{ cursor: "pointer", color: "#ff0000" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteMessage();
+                  }}
+                >
+                  {option.title}
+                </Typography>
+              ) : (
+                <Typography sx={{ cursor: "pointer", color: "#fff" }}>
+                  {option.title}
+                </Typography>
+              )}
             </MenuItem>
           ))}
         </Stack>
       </Menu>
+      {messageDeleted && <Typography>Message has been deleted</Typography>}
     </>
   );
 };

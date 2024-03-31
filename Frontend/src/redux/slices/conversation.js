@@ -27,7 +27,7 @@ const slice = createSlice({
           name: `${user?.firstName} ${user?.lastName}`,
           online: user?.status === "Online",
           img: faker.image.avatar(),
-          msg: faker.music.songName(),
+          msg: el.messages,
           time: "9:36",
           unread: 0,
           pinned: false,
@@ -87,6 +87,13 @@ const slice = createSlice({
     },
     fetchCurrentMessages(state, action) {
       const messages = action.payload.messages;
+
+      // Check if messages is an array before mapping
+      if (!Array.isArray(messages)) {
+        console.error("Messages is not an array:", messages);
+        return;
+      }
+
       const formatted_messages = messages.map((el) => ({
         id: el._id,
         type: "msg",
@@ -95,6 +102,7 @@ const slice = createSlice({
         incoming: el.to === user_id,
         outgoing: el.from === user_id,
       }));
+
       state.direct_chat.current_messages = formatted_messages;
     },
     addDirectMessage(state, action) {
@@ -128,14 +136,14 @@ export const SetCurrentConversation = (current_conversation) => {
   };
 };
 
-export const FetchCurrentMessages = ({ messages }) => {
+export const FetchCurrentMessages = (messages) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.fetchCurrentMessages({ messages }));
+    dispatch(slice.actions.fetchCurrentMessages(messages));
   };
 };
 
 export const AddDirectMessage = (message) => {
   return async (dispatch, getState) => {
-    dispatch(slice.actions.addDirectMessage({ message }));
+    dispatch(slice.actions.addDirectMessage(message));
   };
 };

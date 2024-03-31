@@ -21,6 +21,7 @@ import {
 import { faker } from "@faker-js/faker";
 import React, { useState } from "react";
 import Shortcuts from "../../sections/settings/Shortcuts";
+import ThemeDialog from "../../sections/settings/ThemeDialog";
 
 const Settings = () => {
   const theme = useTheme();
@@ -33,7 +34,15 @@ const Settings = () => {
   const handleCloseShortcuts = () => {
     setOpenShortcuts(false);
   };
+ const [openTheme, setOpenTheme] = useState(false);
 
+ const handleOpenTheme = () => {
+   setOpenTheme(true);
+ };
+
+ const handleCloseTheme = () => {
+   setOpenTheme(false);
+ };
   const list = [
     {
       key: 0,
@@ -57,8 +66,7 @@ const Settings = () => {
       key: 3,
       icon: <PencilCircle size={20} />,
       title: "Theme",
-      //onclick: handleOpenTheme,
-      onclick: () => {},
+      onclick: handleOpenTheme,
     },
     {
       key: 4,
@@ -155,6 +163,9 @@ const Settings = () => {
             borderBottom: "6px solid #0162C4",
           }}
         >
+          {openTheme && (
+            <ThemeDialog open={openTheme} handleClose={handleCloseTheme} />
+          )}
           {openShortcuts && (
             <Shortcuts
               open={openShortcuts}

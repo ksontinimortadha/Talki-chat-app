@@ -21,6 +21,12 @@ exports.updateMe = async (req, res, next) => {
     message: "Profile updated successfully!",
   });
 };
+exports.getMe = async (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    data: req.user,
+  });
+};
 
 exports.getUsers = async (req, res, next) => {
   try {

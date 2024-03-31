@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
-
+const ObjectId = mongoose.Types.ObjectId;
 process.on("uncaughtException", (err) => {
   console.log(err);
   process.exit(1);
@@ -92,33 +92,46 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("accept_request", async (data) => {
-    // accept friend request => add ref of each other in friends array
-    console.log(data);
-    const request_doc = await FriendRequest.findById(data.request_id);
+    try {
+      // Find the friend request document
+      const request_doc = await FriendRequest.findById(data.request_id);
 
-    console.log(request_doc);
+      if (!request_doc) {
+        throw new Error("Friend request not found");
+      }
 
-    const sender = await User.findById(request_doc.sender);
-    const receiver = await User.findById(request_doc.recipient);
+      // Find the sender and receiver users
+      const sender = await User.findById(request_doc.sender);
+      const receiver = await User.findById(request_doc.recipient);
 
-    sender.friends.push(request_doc.recipient);
-    receiver.friends.push(request_doc.sender);
+      if (!sender || !receiver) {
+        throw new Error("Sender or receiver not found");
+      }
 
-    await receiver.save({ new: true, validateModifiedOnly: true });
-    await sender.save({ new: true, validateModifiedOnly: true });
+      // Update sender and receiver friend lists
+      sender.friends.push(request_doc.recipient);
+      receiver.friends.push(request_doc.sender);
 
-    await FriendRequest.findByIdAndDelete(data.request_id);
+      // Save the updated sender and receiver documents
+      await Promise.all([receiver.save(), sender.save()]);
 
-    // delete this request doc
-    // emit event to both of them
+      // Emit event request accepted to both sender and receiver
+      io.to(sender.socket_id).emit("request_accepted", {
+        message: "Friend Request Accepted",
+      });
 
-    // emit event request accepted to both
-    io.to(sender?.socket_id).emit("request_accepted", {
-      message: "Friend Request Accepted",
-    });
-    io.to(receiver?.socket_id).emit("request_accepted", {
-      message: "Friend Request Accepted",
-    });
+      io.to(receiver.socket_id).emit("request_accepted", {
+        message: "Friend Request Accepted",
+      });
+
+      // Delete the friend request
+      await FriendRequest.findByIdAndDelete(data.request_id);
+
+      console.log("Friend request accepted successfully");
+    } catch (error) {
+      console.error("Error accepting friend request:", error.message);
+      // Handle the error as needed
+    }
   });
 
   socket.on("get_direct_conversations", async ({ user_id }, callback) => {
@@ -126,20 +139,22 @@ io.on("connection", async (socket) => {
       participants: { $all: [user_id] },
     }).populate("participants", "firstName lastName avatar _id email status");
 
-    // db.books.find({ authors: { $elemMatch: { name: "John Smith" } } })
-
     console.log(existing_conversations);
 
     callback(existing_conversations);
   });
 
   socket.on("start_conversation", async (data) => {
+    // data: {to: from:}
+
     const { to, from } = data;
 
     // check if there is any existing conversation
+
     const existing_conversations = await OneToOneMessage.find({
       participants: { $size: 2, $all: [to, from] },
     }).populate("participants", "firstName lastName _id email status");
+
     console.log(existing_conversations[0], "Existing Conversation");
 
     // if no => create a new OneToOneMessage doc & emit event "start_chat" & send conversation details as payload
@@ -147,11 +162,14 @@ io.on("connection", async (socket) => {
       let new_chat = await OneToOneMessage.create({
         participants: [to, from],
       });
-      new_chat = await OneToOneMessage.findById(new_chat._id).populate(
+
+      new_chat = await OneToOneMessage.findById(new_chat).populate(
         "participants",
         "firstName lastName _id email status"
       );
+
       console.log(new_chat);
+
       socket.emit("start_chat", new_chat);
     }
     // if yes => just emit event "start_chat" & send conversation details as payload
@@ -162,12 +180,30 @@ io.on("connection", async (socket) => {
 
   socket.on("get_messages", async (data, callback) => {
     try {
-      const { messages } = await OneToOneMessage.findById(
-        data.conversation_id
-      ).select("messages");
-      callback(messages);
+      const conversation = await OneToOneMessage.findById(data.conversation_id)
+        .select("messages")
+        .lean();
+
+      if (!conversation) {
+        throw new Error("Conversation not found");
+      }
+
+      const { messages } = conversation || {};
+
+      if (!messages) {
+        console.log("No messages found for this conversation");
+        callback([]);
+        return;
+      }
+
+      const sortedMessages = messages.sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+      );
+
+      callback(sortedMessages);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching messages:", error.message);
+      callback({ error: error.message });
     }
   });
 
@@ -231,6 +267,26 @@ io.on("connection", async (socket) => {
     // emit incoming_message -> to user
 
     // emit outgoing_message -> from user
+  });
+
+  // Handle delete_message event
+  socket.on("delete_message", async (messageId) => {
+    try {
+      const deletedMessage = await OneToOneMessage.findOneAndUpdate(
+        { "messages._id": messageId },
+        { $pull: { messages: { _id: messageId } } },
+        { new: true }
+      );
+
+      if (deletedMessage) {
+        io.emit("message_deleted", messageId);
+        console.log(`Deleted message with ID: ${messageId}`);
+      } else {
+        console.log(`Message with ID ${messageId} not found`);
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error.message);
+    }
   });
 
   socket.on("end", async (data) => {

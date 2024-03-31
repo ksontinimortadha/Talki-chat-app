@@ -17,6 +17,7 @@ import {
 import { ChatList } from "../../data";
 import ChatElement from "../../components/ChatElement";
 import CreateGroup from "../../sections/main/CreateGroup";
+import NoChat from "../../assets/Illustration/NoChat";
 
 const Group = () => {
   const theme = useTheme();
@@ -68,7 +69,7 @@ const Group = () => {
               alignItems={"center"}
               direction={"row"}
             >
-              <Typography variant="subtitle2" sx={{}} component={Link}>
+              <Typography variant="subtitle2" sx={{ color: "#3263C4" }}>
                 Create New Group
               </Typography>
               <IconButton onClick={handleOpenDialog}>
@@ -81,13 +82,6 @@ const Group = () => {
               sx={{ flexGrow: 1, overflowY: "scroll", height: "100%" }}
             >
               <Stack spacing={2.5}>
-                <Typography variant="subtitle2" sx={{ color: "#676667" }}>
-                  Pinned
-                </Typography>
-                {/*Pinned Groups List */}
-                {ChatList.filter((el) => el.pinned).map((el, idx) => {
-                  return <ChatElement {...el} />;
-                })}
                 <Typography variant="subtitle2" sx={{ color: "#676667" }}>
                   All Groups
                 </Typography>
@@ -114,6 +108,26 @@ const Group = () => {
           {openDialog && (
             <CreateGroup open={openDialog} handleClose={handleCloseDialog} />
           )}
+          <Stack
+            spacing={2}
+            sx={{ height: "100%", width: "100%" }}
+            alignItems="center"
+            justifyContent={"center"}
+          >
+            <NoChat />
+            <Typography variant="subtitle2">
+              Select a conversation or start a{" "}
+              <Link
+                style={{
+                  color: theme.palette.primary.main,
+                  textDecoration: "none",
+                }}
+                to="/"
+              >
+                new one
+              </Link>
+            </Typography>
+          </Stack>
         </Box>
       </Stack>
     </>

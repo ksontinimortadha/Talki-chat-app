@@ -114,8 +114,6 @@ const FriendRequestElement = ({
   img,
   firstName,
   lastName,
-  incoming,
-  missed,
   online,
   id,
 }) => {

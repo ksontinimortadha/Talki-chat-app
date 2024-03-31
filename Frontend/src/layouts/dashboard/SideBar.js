@@ -26,8 +26,6 @@ const getPath = (index) => {
     case 1:
       return "/group";
     case 2:
-      return "/call";
-    case 3:
       return "/settings";
     default:
       break;
@@ -134,7 +132,7 @@ const Sidebar = () => {
               )
             )}
             <Divider sx={{ width: "48px" }} />
-            {selected === 3 ? (
+            {selected === 2 ? (
               <Box
                 p={1}
                 sx={{
@@ -156,8 +154,8 @@ const Sidebar = () => {
                       : theme.palette.text.primary,
                 }}
                 onClick={() => {
-                  setSelected(3);
-                  navigate(getPath(3));
+                  setSelected(2);
+                  navigate(getPath(2));
                 }}
               >
                 <Gear />
