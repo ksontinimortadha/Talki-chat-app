@@ -11,7 +11,7 @@ const StyledChatBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const CallElement = ({ online }) => {
+const CallElement = ({ img, name, id, handleClose }) => {
   const theme = useTheme();
   return (
     <StyledChatBox
@@ -34,21 +34,27 @@ const CallElement = ({ online }) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar src={faker.image.avatar()} />
+              <Avatar alt={name} src={faker.image.avatar()} />
             </StyledBadge>
           ) : (
             <Avatar src={faker.image.avatar()} />
           )}
           <Stack spacing={0.3}>
-            <Typography variant="subtitle2">{faker.name.fullName()}</Typography>
+            <Typography variant="subtitle2">{name}</Typography>
           </Stack>
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <IconButton>
-            <Phone color="green" />
+            <Phone
+              style={{ color: theme.palette.primary.main }}
+              onClick={() => {
+                dispatch(StartAudioCall(id));
+                handleClose();
+              }}
+            />
           </IconButton>
           <IconButton>
-            <VideoCamera color="green" />
+            <VideoCamera style={{ color: theme.palette.primary.main }} />
           </IconButton>
         </Stack>
       </Stack>

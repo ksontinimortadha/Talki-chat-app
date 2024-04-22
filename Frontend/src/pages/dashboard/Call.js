@@ -7,7 +7,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   SearchIconWrapper,
@@ -15,11 +15,19 @@ import {
 } from "../../components/search";
 import { MagnifyingGlass, Plus } from "phosphor-react";
 import CallLogElement from "../../components/CallLogElement";
-import { CallLogs } from "../../data";
 import StartCall from "../../sections/main/StartCall";
+import { useDispatch, useSelector } from "react-redux";
+import CallElement from "../../components/CallElement";
+import { FetchCallLogs } from "../../redux/slices/app";
 
 const Call = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(FetchCallLogs());
+  }, [dispatch]);
+  const { call_logs } = useSelector((state) => state.app);
+  console.log("call_logs", call_logs);
   const [openDialog, setOpenDialog] = useState(false);
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -78,7 +86,7 @@ const Call = () => {
             <Divider />
             <Stack sx={{ flexGrow: 1, overflow: "scroll", height: "100%" }}>
               <Stack spacing={2.4}>
-                {CallLogs.map((el, idx) => {
+                {call_logs.map((el, idx) => {
                   return <CallLogElement key={idx} {...el} />;
                 })}
               </Stack>

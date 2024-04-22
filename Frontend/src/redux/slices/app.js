@@ -27,6 +27,9 @@ const slice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    fetchCallLogs(state, action) {
+      state.call_logs = action.payload.call_logs;
+    },
     setRoomId(state, action) {
       state.room_id = action.payload.room_id;
     },
@@ -64,6 +67,10 @@ const slice = createSlice({
       state.chat_type = "individual";
       state.room_id = action.payload.room_id;
     },
+    selectGroupConversation(state, action) {
+      state.chat_type = "group";
+      state.room_id = action.payload.room_id;
+    },
   },
 });
 
@@ -91,6 +98,31 @@ export const showSnackbar =
     }, 4000);
   };
 
+  export const SetRoomId = ({ room_id }) => {
+    return async (dispatch, getState) => {
+      dispatch(slice.actions.setRoomId({ room_id }));
+    };
+  };
+export const FetchCallLogs = () => {
+  return async (dispatch, getState) => {
+    axios
+      .get("/user/get-call-logs", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getState().auth.token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        dispatch(
+          slice.actions.fetchCallLogs({ call_logs: response.data.data })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+};
 export function FetchUsers() {
   return async (dispatch, getState) => {
     await axios
@@ -153,6 +185,12 @@ export function FetchFriendRequests() {
 export const SelectConversation = ({ room_id }) => {
   return async (dispatch, getState) => {
     dispatch(slice.actions.selectConversation({ room_id }));
+  };
+};
+
+export const selectGroupConversation = ({ room_id }) => {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.selectGroupConversation({ room_id }));
   };
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Badge,
@@ -9,9 +9,9 @@ import {
   Button,
 } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
-import { Chat } from "phosphor-react";
+import { Chat, Spinner, UserCircleMinus, UserCirclePlus } from "phosphor-react";
 import { socket } from "../socket";
-import { showSnackbar } from "../redux/slices/app";
+import { v4 as uuidv4 } from "uuid";
 const user_id = localStorage.getItem("user_id");
 
 const StyledChatBox = styled(Box)(({ theme }) => ({
@@ -52,6 +52,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const UserElement = ({ img, firstName, lastName, online, _id }) => {
   const theme = useTheme();
   const name = `${firstName} ${lastName}`;
+  const [iconClicked, setIconClicked] = useState(false);
+
+  useEffect(() => {
+    // Retrieve iconClicked value from localStorage on component mount
+    const storedIconClicked = localStorage.getItem(`iconClicked_${_id}`);
+    if (storedIconClicked) {
+      setIconClicked(JSON.parse(storedIconClicked));
+    }
+  }, [_id]);
 
   const handleSendRequest = () => {
     if (!socket) {
@@ -59,17 +68,9 @@ const UserElement = ({ img, firstName, lastName, online, _id }) => {
       return;
     }
 
-    console.log("Sending friend request... (clicked)");
-    socket.emit("friend_request", { to: _id, from: user_id }, () => {
-      console.log("Request sent successfully");
-      alert("Request sent");
-      dispatch(
-        showSnackbar({
-          severity: "success",
-          message: data.message,
-        })
-      );
-    });
+    socket.emit("friend_request", { to: _id, from: user_id });
+    setIconClicked(true);
+    localStorage.setItem(`iconClicked_${_id}`, JSON.stringify(true)); // Store iconClicked value in localStorage
   };
 
   return (
@@ -103,20 +104,17 @@ const UserElement = ({ img, firstName, lastName, online, _id }) => {
           </Stack>
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
-          <Button onClick={handleSendRequest}>Add Friend</Button>
+          <IconButton onClick={handleSendRequest}>
+            {iconClicked ? <Spinner /> : <UserCirclePlus />}
+          </IconButton>
         </Stack>
       </Stack>
     </StyledChatBox>
   );
 };
 
-const FriendRequestElement = ({
-  img,
-  firstName,
-  lastName,
-  online,
-  id,
-}) => {
+
+const FriendRequestElement = ({ img, firstName, lastName, online, id }) => {
   const theme = useTheme();
   const name = `${firstName} ${lastName}`;
 
@@ -151,13 +149,20 @@ const FriendRequestElement = ({
           </Stack>
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
-          <Button
+          <IconButton
             onClick={() => {
               socket.emit("accept_request", { request_id: id });
             }}
           >
-            Accept Request
-          </Button>
+            <UserCirclePlus />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              socket.emit("refuse_request", { request_id: id });
+            }}
+          >
+            <UserCircleMinus />
+          </IconButton>
         </Stack>
       </Stack>
     </StyledChatBox>
@@ -165,17 +170,8 @@ const FriendRequestElement = ({
 };
 
 // FriendElement
-const FriendElement = ({
-  img,
-  firstName,
-  lastName,
-  incoming,
-  missed,
-  online,
-  _id,
-}) => {
+const FriendElement = ({ img, firstName, lastName, online, _id }) => {
   const theme = useTheme();
-
   const name = `${firstName} ${lastName}`;
 
   return (
@@ -220,6 +216,18 @@ const FriendElement = ({
             }}
           >
             <Chat />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              // start a new conversation
+              socket.emit("delete_friend", {
+                sender_id: user_id, // Correct sender_id
+                receiver_id: _id,
+              });
+            }}
+          >
+            {" "}
+            <UserCircleMinus />
           </IconButton>
         </Stack>
       </Stack>

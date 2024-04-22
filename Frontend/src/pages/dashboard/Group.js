@@ -8,19 +8,38 @@ import {
   Divider,
 } from "@mui/material";
 import { MagnifyingGlass, Plus } from "phosphor-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   SearchIconWrapper,
   StyledInputBase,
 } from "../../components/search";
-import { ChatList } from "../../data";
-import ChatElement from "../../components/ChatElement";
+import GroupElement from "../../components/GroupElement";
 import CreateGroup from "../../sections/main/CreateGroup";
 import NoChat from "../../assets/Illustration/NoChat";
+import { useDispatch, useSelector } from "react-redux";
+import { FetchGroupConversations } from "../../redux/slices/conversation";
+import { socket } from "../../socket";
+import GroupConversation from "../../components/GroupConversation";
+import Contact from "../../components/Contact";
+import { SetRoomId } from "../../redux/slices/app";
+import BottomNav from "../../layouts/dashboard/BottomNav";
+import useResponsive from "../../hooks/useResponsive";
+const user_id = localStorage.getItem("user_id");
 
 const Group = () => {
+  const isDesktop = useResponsive("up", "md");
+
+  const { room_id, chat_type } = useSelector((state) => state.app);
+  const [showContact, setShowContact] = useState(false);
+  const [sidebarType, setSidebarType] = useState("CONTACT");
+
+  const toggleContact = () => {
+    setShowContact(!showContact);
+  };
   const theme = useTheme();
+  const dispatch = useDispatch();
+
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleCloseDialog = () => {
@@ -28,6 +47,23 @@ const Group = () => {
   };
   const handleOpenDialog = () => {
     setOpenDialog(true);
+  };
+
+  const { group_conversations } = useSelector(
+    (state) => state.conversation.group_chat
+  );
+  console.log("group convo", group_conversations);
+
+  useEffect(() => {
+    socket.emit("get_group_conversations", { user_id }, (data) => {
+      dispatch(FetchGroupConversations({ group_conversations: data }));
+    });
+  }, [dispatch]);
+
+  const toggleRoomId = (makeRoomIdNull = false) => {
+    if (makeRoomIdNull) {
+      dispatch(SetRoomId({ room_id: null }));
+    }
   };
   return (
     <>
@@ -41,10 +77,14 @@ const Group = () => {
             backgroundColor: (theme) =>
               theme.palette.mode === "light"
                 ? "#F8FAFF"
-                : theme.palette.background,
+                : theme.palette.background.default,
             boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
           }}
         >
+          {!isDesktop && (
+            // SideBar
+            <BottomNav />
+          )}
           <Stack p={3} spacing={2} sx={{ maxHeight: "100vh" }}>
             <Stack
               alignItems={"center"}
@@ -86,31 +126,33 @@ const Group = () => {
                   All Groups
                 </Typography>
                 {/*All Groups List */}
-                {ChatList.filter((el) => !el.pinned).map((el, idx) => {
-                  return <ChatElement {...el} />;
-                })}
+                {group_conversations.map((el, idx) => (
+                  <GroupElement key={el.id} {...el} />
+                ))}
               </Stack>
             </Stack>
           </Stack>
         </Box>
+        {openDialog && (
+          <CreateGroup open={openDialog} handleClose={handleCloseDialog} />
+        )}
         {/* Right */}
-        <Box
-          sx={{
-            height: "100%",
-            width: "calc(100vw - 420px )",
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? "#FFF"
-                : theme.palette.background.paper,
-            borderBottom: "6px solid #0162C4",
-          }}
-        >
-          {openDialog && (
-            <CreateGroup open={openDialog} handleClose={handleCloseDialog} />
-          )}
+        {chat_type === "group" && room_id !== null ? (
+          <GroupConversation
+            toggleContact={toggleContact}
+            toggleRoomId={toggleRoomId}
+          />
+        ) : (
           <Stack
             spacing={2}
-            sx={{ height: "100%", width: "100%" }}
+            sx={{
+              height: "100%",
+              width: "100%",
+              backgroundColor:
+                theme.palette.mode === "light"
+                  ? "#f8faff"
+                  : theme.palette.background.paper,
+            }}
             alignItems="center"
             justifyContent={"center"}
           >
@@ -128,7 +170,17 @@ const Group = () => {
               </Link>
             </Typography>
           </Stack>
-        </Box>
+        )}
+        {showContact &&
+          (() => {
+            switch (sidebarType) {
+              case "CONTACT":
+                return <Contact toggleContact={toggleContact} />;
+
+              default:
+                break;
+            }
+          })()}
       </Stack>
     </>
   );

@@ -11,34 +11,41 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   FetchCurrentMessages,
+  FetchGroupConversations,
+  FetchGroupMessages,
   SetCurrentConversation,
+  SetCurrentGroupConversation,
 } from "../../redux/slices/conversation";
 import { socket } from "../../socket";
+const user_id = localStorage.getItem("user_id");
 
 const Message = (menu) => {
   const [messageIdToDelete, setMessageIdToDelete] = useState(null);
   const dispatch = useDispatch();
 
-  const { conversations, current_messages } = useSelector(
-    (state) => state.conversation.direct_chat
+  const { group_conversations, current_messages } = useSelector(
+    (state) => state.conversation.group_chat
   );
-  
   const { room_id } = useSelector((state) => state.app);
 
   useEffect(() => {
-    const current = conversations.find((el) => el?.id === room_id);
+    const current = group_conversations.find((el) => el?.id === room_id);
 
-    socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
-      dispatch(FetchCurrentMessages({ messages: data }));
-    });
+    socket.emit(
+      "get_group_conversations",
+      { group_conversations_id: current?.id },
+      (data) => {
+        dispatch(FetchGroupMessages({ messages: data }));
+      }
+    );
 
-    dispatch(SetCurrentConversation(current));
-  }, []);
+    dispatch(SetCurrentGroupConversation(current));
+  }, [dispatch]);
   return (
     <>
       <Box p={3}>
         <Stack spacing={3}>
-          {current_messages.map((el, i) => {
+          {group_conversations.map((el, i) => {
             switch (el.type) {
               case "divider":
                 // Timeline

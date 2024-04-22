@@ -5,18 +5,26 @@ import Conversation from "../../components/Conversation";
 import Contact from "../../components/Contact";
 import SharedMessages from "../../components/SharedMessages";
 import StarredMessages from "../../components/StarredMessages";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NoChat from "../../assets/Illustration/NoChat";
-import { useSearchParams } from "react-router-dom";
+import { SetRoomId } from "../../redux/slices/app";
 
 const GeneralApp = () => {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const { room_id, chat_type } = useSelector((state) => state.app);
 
   const [showContact, setShowContact] = useState(false);
   const [sidebarType, setSidebarType] = useState("CONTACT");
+
   const toggleContact = () => {
     setShowContact(!showContact);
+  };
+
+  const toggleRoomId = (makeRoomIdNull = false) => {
+    if (makeRoomIdNull) {
+      dispatch(SetRoomId({ room_id: null }));
+    }
   };
 
   const updateSidebarType = (newType) => {
@@ -38,7 +46,10 @@ const GeneralApp = () => {
         }}
       >
         {chat_type === "individual" && room_id !== null ? (
-          <Conversation toggleContact={toggleContact} />
+          <Conversation
+            toggleContact={toggleContact}
+            toggleRoomId={toggleRoomId}
+          />
         ) : (
           <Stack
             spacing={2}

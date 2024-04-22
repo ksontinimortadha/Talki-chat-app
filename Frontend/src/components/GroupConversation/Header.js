@@ -12,11 +12,15 @@ import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from "phosphor-react";
 import StyledBadge from "../StyledBadge";
 import { useSelector } from "react-redux";
 
+const user_id = localStorage.getItem("user_id");
+
 const Header = ({ toggleContact, toggleRoomId }) => {
   const theme = useTheme();
-  const { current_conversation } = useSelector(
-    (state) => state.conversation.direct_chat
+  const { current_conversations } = useSelector(
+    (state) => state.conversation.group_chat
   );
+
+  console.log("group convo", current_conversations);
   return (
     <Box
       p={2}
@@ -43,12 +47,12 @@ const Header = ({ toggleContact, toggleRoomId }) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar alt={current_conversation?.name} />
+              <Avatar alt={current_conversations?.title} />
             </StyledBadge>
           </Box>
           <Stack spacing={0.2}>
             <Typography variant="subtitle2">
-              {current_conversation?.name}
+              {current_conversations?.title}
             </Typography>
             <Typography variant="caption">Online</Typography>
           </Stack>

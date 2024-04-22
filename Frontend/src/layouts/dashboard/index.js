@@ -14,8 +14,11 @@ import {
   AddDirectMessage,
   UpdateDirectConversation,
 } from "../../redux/slices/conversation";
+import useResponsive from "../../hooks/useResponsive";
 
 const DashboardLayout = () => {
+  const isDesktop = useResponsive("up", "md");
+
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { conversations, current_conversation } = useSelector(
@@ -33,40 +36,36 @@ const DashboardLayout = () => {
       connectSocket(user_id);
     }
 
-    // Event listener for new friend requests
-    socket.on("new_friend_request", (data) => {
+    const handleNewFriendRequest = (data) => {
       dispatch(
         showSnackbar({
           severity: "success",
           message: data.message,
         })
       );
-    });
+    };
 
-    // Event listener for accepted friend requests
-    socket.on("request_accepted", (data) => {
+    const handleRequestAccepted = (data) => {
       dispatch(
         showSnackbar({
           severity: "success",
           message: data.message,
         })
       );
-    });
+    };
 
-    // Event listener for sent friend requests
-    socket.on("request_sent", (data) => {
+    const handleRequestSent = (data) => {
       dispatch(
         showSnackbar({
           severity: "success",
           message: data.message,
         })
       );
-    });
+    };
 
-   socket.on("new_message", (data) => {
+    const handleNewMessage = (data) => {
       const message = data.message;
       console.log(current_conversation, data);
-      // check if msg we got is from currently selected conversation
       if (current_conversation?.id === data.conversation_id) {
         dispatch(
           AddDirectMessage({
@@ -79,40 +78,45 @@ const DashboardLayout = () => {
           })
         );
       }
-    }); 
+    };
 
-    socket.on("start_chat", (data) => {
+    const handleStartChat = (data) => {
       console.log(data);
-      // add / update to conversation list
       const existing_conversation = conversations.find(
         (el) => el?.id === data._id
       );
       if (existing_conversation) {
-        // update direct conversation
         dispatch(UpdateDirectConversation({ conversation: data }));
       } else {
-        // add direct conversation
         dispatch(AddDirectConversation({ conversation: data }));
       }
       dispatch(SelectConversation({ room_id: data._id }));
-    });
-
-    // Cleanup the event listeners when the component unmounts
-    return () => {
-      socket?.off("new_friend_request");
-      socket?.off("request_accepted");
-      socket?.off("request_sent");
-      socket?.off("start_chat");
-      socket?.off("new_message");
     };
-  }, [isLoggedIn, user_id, dispatch, socket]);
+
+    socket.on("new_friend_request", handleNewFriendRequest);
+    socket.on("request_accepted", handleRequestAccepted);
+    socket.on("request_sent", handleRequestSent);
+    socket.on("new_message", handleNewMessage);
+    socket.on("start_chat", handleStartChat);
+
+    return () => {
+      socket.off("new_friend_request", handleNewFriendRequest);
+      socket.off("request_accepted", handleRequestAccepted);
+      socket.off("request_sent", handleRequestSent);
+      socket.off("new_message", handleNewMessage);
+      socket.off("start_chat", handleStartChat);
+    };
+  }, [isLoggedIn, user_id, dispatch, conversations, current_conversation]);
 
   if (!isLoggedIn) {
     return <Navigate to={"/auth/login"} />;
   }
   return (
     <Stack direction="row">
-      <SideBar />
+      {isDesktop && (
+        // SideBar
+        <SideBar />
+      )}
       <Outlet />
     </Stack>
   );

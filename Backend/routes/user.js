@@ -10,4 +10,15 @@ router.get("/get-users", authController.protect, userController.getUsers);
 router.get("/get-requests", authController.protect, userController.getRequests);
 router.get("/get-friends", authController.protect, userController.getFriends);
 
+router.get(
+  "/get-call-logs",
+  authController.protect,
+  userController.getCallLogs
+);
+router.post(
+  "/start-audio-call",
+  authController.protect,
+  userController.startAudioCall
+);
+
 module.exports = router;

@@ -7,6 +7,7 @@ import {
   SignOut,
   User,
   Users,
+  UsersFour,
 } from "phosphor-react";
 
 const Profile_Menu = [
@@ -31,7 +32,7 @@ const Nav_Buttons = [
   },
   {
     index: 1,
-    icon: <Users />,
+    icon: <UsersFour />,
   },
 ];
 
@@ -374,21 +375,6 @@ const Chat_History = [
 ];
 
 const Message_options = [
-  {
-    title: "Reply",
-  },
-  {
-    title: "React to message",
-  },
-  {
-    title: "Forward message",
-  },
-  {
-    title: "Star message",
-  },
-  {
-    title: "Report",
-  },
   {
     title: "Delete Message",
   },

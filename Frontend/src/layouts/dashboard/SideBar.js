@@ -2,10 +2,12 @@ import {
   Avatar,
   Box,
   Divider,
+  FormControlLabel,
   IconButton,
   Menu,
   MenuItem,
   Stack,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { Gear } from "phosphor-react";
@@ -23,10 +25,13 @@ const getPath = (index) => {
   switch (index) {
     case 0:
       return "/app";
+
     case 1:
       return "/group";
+
     case 2:
       return "/settings";
+
     default:
       break;
   }
@@ -61,6 +66,7 @@ const Sidebar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const labelText = theme.palette.mode === "light" ? "Light Mode" : "Dark Mode";
   return (
     <Box
       p={2}
@@ -163,11 +169,24 @@ const Sidebar = () => {
             )}
           </Stack>
         </Stack>
-        <Stack spacing={4}>
+        <Stack spacing={4} sx={{ alignItems: "center" }}>
           {/* SWITCH  */}
-          <AntSwitch
-            defaultChecked={theme.palette.mode === "light"}
-            onChange={onToggleMode}
+          <FormControlLabel
+            control={
+              <div>
+                <Typography
+                  variant="body2"
+                  sx={{ textAlign: "center", margin: "2px" }}
+                >
+                  {labelText}
+                </Typography>
+                <AntSwitch
+                  defaultChecked={theme.palette.mode === "light"}
+                  onChange={onToggleMode}
+                />
+              </div>
+            }
+            labelPlacement="top" // This places the label on top of the switch
           />
           <Avatar
             id="basic-button"
@@ -175,7 +194,6 @@ const Sidebar = () => {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
-            src={faker.image.avatar()}
           />
           <Menu
             id="basic-menu"

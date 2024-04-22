@@ -23,35 +23,46 @@ exports.register = async (req, res, next) => {
     "password"
   );
 
-  // check if a verified user with given email exists
+  try {
+    // check if a verified user with given email exists
+    const existingUser = await User.findOne({ email });
 
-  const existing_user = await User.findOne({ email: email });
+    if (existingUser && existingUser.verified) {
+      // user with this email already exists and is verified, so return an error
+      return res.status(400).json({
+        status: "error",
+        message: "Email already in use, Please login.",
+      });
+    } else if (existingUser) {
+      // if user exists but is not verified, update the existing user
+      await User.findOneAndUpdate({ email }, filteredBody, {
+        new: true,
+        validateModifiedOnly: true,
+      });
 
-  if (existing_user && existing_user.verified) {
-    // user with this email already exists, Please login
-    return res.status(400).json({
+      // generate an otp and send to email
+      req.userId = existingUser._id;
+      next();
+    } else {
+      // if user is not created before, create a new user
+      const newUser = await User.create(filteredBody);
+
+      // generate an otp and send to email
+      req.userId = newUser._id;
+      next();
+    }
+
+    
+  } catch (error) {
+    // Handle any errors
+    console.error("Registration error:", error);
+    res.status(500).json({
       status: "error",
-      message: "Email already in use, Please login.",
+      message: "Internal server error",
     });
-  } else if (existing_user) {
-    // if not verified than update prev one
-    await User.findOneAndUpdate({ email: email }, filteredBody, {
-      new: true,
-      validateModifiedOnly: true,
-    });
-
-    // generate an otp and send to email
-    req.userId = existing_user._id;
-    next();
-  } else {
-    // if user is not created before than create a new one
-    const new_user = await User.create(filteredBody);
-
-    // generate an otp and send to email
-    req.userId = new_user._id;
-    next();
   }
 };
+
 
 exports.sendOTP = async (req, res, next) => {
   const { userId } = req;
@@ -120,7 +131,7 @@ exports.verifyOTP = async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    message: "OTP verified Successfully!",
+    message: "Account created successfully",
     token,
     user_id: user._id,
   });
@@ -130,45 +141,55 @@ exports.verifyOTP = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // console.log(email, password);
+  try {
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({
+        status: "error",
+        message: "Both email and password are required",
+      });
+    }
 
-  if (!email || !password) {
-    res.status(400).json({
-      status: "error",
-      message: "Both email and password are required",
+    // Find user by email
+    const user = await User.findOne({ email }).select("+password");
+
+    // Check if user exists
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email or password is incorrect",
+      });
+    }
+
+    // Check if password is correct
+    const isPasswordValid = await user.correctPassword(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        status: "error",
+         message: "Password is incorrect",
+      });
+    }
+
+    // Sign JWT token
+    const token = signToken(user._id);
+
+    // Send token and user id in response
+    res.status(200).json({
+      status: "success",
+      message: "Logged in successfully!",
+      token,
+      user_id: user._id,
     });
-    return;
-  }
-
-  const user = await User.findOne({ email: email }).select("+password");
-
-  if (!user || !user.password) {
-    res.status(400).json({
+  } catch (error) {
+    // Handle any other errors
+    console.error("Login error:", error);
+    res.status(500).json({
       status: "error",
-      message: "Incorrect password",
+      message: "Internal server error",
     });
-
-    return;
   }
-
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    res.status(400).json({
-      status: "error",
-      message: "Email or password is incorrect",
-    });
-
-    return;
-  }
-
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: "success",
-    message: "Logged in successfully!",
-    token,
-    user_id: user._id,
-  });
 };
+
 
 // Protect
 exports.protect = async (req, res, next) => {

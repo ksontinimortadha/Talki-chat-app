@@ -21,7 +21,7 @@ const StyledChatBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const CallLogElement = ({ online, missed, incoming }) => {
+const CallLogElement = ({ img, name, incoming, missed, online, id }) => {
   const theme = useTheme();
 
   return (
@@ -45,10 +45,10 @@ const CallLogElement = ({ online, missed, incoming }) => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               variant="dot"
             >
-              <Avatar src={faker.image.avatar()} />
+              <Avatar alt={name} src={faker.image.avatar()} />
             </StyledBadge>
           ) : (
-            <Avatar src={faker.image.avatar()} />
+            <Avatar alt={name} src={faker.image.avatar()} />
           )}
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{faker.name.fullName()}</Typography>
@@ -65,6 +65,7 @@ const CallLogElement = ({ online, missed, incoming }) => {
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <IconButton>
             <Phone color="green" />
+            <VideoCamera />
           </IconButton>
         </Stack>
       </Stack>

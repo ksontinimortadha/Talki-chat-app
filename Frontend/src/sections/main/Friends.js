@@ -18,7 +18,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const UsersList = () => {
   const dispatch = useDispatch();
-
   const { users } = useSelector((state) => state.app);
 
   useEffect(() => {
@@ -55,16 +54,17 @@ const FriendsList = () => {
 const RequestsList = () => {
   const dispatch = useDispatch();
   const { friendRequests } = useSelector((state) => state.app);
-
   useEffect(() => {
     dispatch(FetchFriendRequests());
   }, [dispatch]);
 
   return (
     <>
-      {friendRequests.map((el, idx) => {
-        return <FriendRequestElement key={idx} {...el.sender} id={el._id} />;
-      }).filter((el)=> !el.friendRequests)}
+      {friendRequests
+        .map((el, idx) => {
+          return <FriendRequestElement key={idx} {...el.sender} id={el._id} />;
+        })
+        .filter((el) => !el.friendRequests)}
     </>
   );
 };

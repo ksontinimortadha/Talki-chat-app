@@ -74,21 +74,8 @@ const ChatElement = ({ id, name, img, msg, time, unread, online }) => {
         justifyContent="space-between"
       >
         <Stack direction="row" spacing={2}>
-          {/* {online ? (
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              variant="dot"
-            >
-              <Avatar alt={name} src={img} />
-            </StyledBadge>
-          ) : (
-            <Avatar alt={name} src={img} />
-          )} */}
-
           <Stack spacing={0.3}>
             <Typography variant="subtitle2">{name}</Typography>
-            {/* Provide messageText as children */}
             <Typography variant="caption">{messageText}</Typography>
           </Stack>
         </Stack>

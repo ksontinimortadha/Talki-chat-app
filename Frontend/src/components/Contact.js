@@ -26,8 +26,8 @@ import {
 } from "phosphor-react";
 import React, { useState } from "react";
 import AntSwitch from "./AntSwitch";
-import { faker } from "@faker-js/faker";
 import { useSelector } from "react-redux";
+import { socket } from "../socket";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -57,6 +57,26 @@ const BlockDialog = ({ open, handleClose }) => {
 };
 
 const DeleteChatDialog = ({ open, handleClose }) => {
+  const { current_conversation } = useSelector(
+    (state) => state.conversation.direct_chat
+  );
+  const [conversationIdToDelete, setConversationIdToDelete] = useState(null);
+
+  // Function to handle setting conversation ID to delete
+  const handleSetConversationIdToDelete = (conversationId) => {
+    setConversationIdToDelete(conversationId);
+  };
+
+  const handleDeleteChat = (conversationId) => {
+    if (conversationId) {
+      // Emit socket event to delete conversation
+      socket.emit("delete_conversation", { conversationId });
+
+      // Close the dialog
+      handleClose();
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -73,7 +93,12 @@ const DeleteChatDialog = ({ open, handleClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose}>Yes</Button>
+        <Button
+          onClick={() => handleDeleteChat(current_conversation.id)}
+          color="primary"
+        >
+          Yes
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -133,10 +158,7 @@ const Contact = ({ toggleContact, updateSidebarType }) => {
           spacing={3}
         >
           <Stack alignItems="center" direction="row" spacing={2}>
-            <Avatar
-              src={current_conversation?.img}
-              alt={current_conversation?.name}
-            />
+            <Avatar alt={current_conversation?.name} />
 
             <Stack spacing={0.5}>
               <Typography variant="article" fontWeight={600}>
@@ -163,7 +185,8 @@ const Contact = ({ toggleContact, updateSidebarType }) => {
               <Typography variant="overline">Video</Typography>
             </Stack>
           </Stack>
-          <Divider />
+
+          {/* <Divider />
           <Stack spacing={0.5}>
             <Typography variant="article" fontWeight={600}>
               About
@@ -171,44 +194,8 @@ const Contact = ({ toggleContact, updateSidebarType }) => {
             <Typography variant="body2" fontWeight={500}>
               {current_conversation?.about}
             </Typography>
-          </Stack>
-          <Divider />
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent={"space-between"}
-          >
-            <Typography variant="subtitle2">Media, Links & Docs</Typography>
-            <Button
-              className="shared"
-              endIcon={<CaretRight />}
-              onClick={() => updateSidebarType("SHARED")}
-            >
-              401
-            </Button>
-          </Stack>
-          <Stack direction={"row"} alignItems="center" spacing={2}>
-            {[1, 2, 3].map((el) => (
-              <Box>
-                <img src={faker.image.food()} alt={faker.name.fullName()} />
-              </Box>
-            ))}
-          </Stack>
-          <Divider />
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent={"space-between"}
-          >
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Star size={21} />
-              <Typography variant="subtitle2">Starred Messages</Typography>
-            </Stack>
+          </Stack> */}
 
-            <IconButton onClick={() => updateSidebarType("STARRED")}>
-              <CaretRight />
-            </IconButton>
-          </Stack>
           <Divider />
           <Stack
             direction="row"
@@ -223,7 +210,7 @@ const Contact = ({ toggleContact, updateSidebarType }) => {
             <AntSwitch />
           </Stack>
           <Divider />
-          <Typography variant="body2">1 group in common</Typography>
+          {/*  <Typography variant="body2">1 group in common</Typography>
           <Stack direction="row" alignItems={"center"} spacing={2}>
             <Avatar src={faker.image.imageUrl()} alt={faker.name.fullName()} />
             <Stack direction="column" spacing={0.5}>
@@ -233,7 +220,7 @@ const Contact = ({ toggleContact, updateSidebarType }) => {
               </Typography>
             </Stack>
           </Stack>
-          <Divider />
+          <Divider /> */}
           <Stack direction="row" alignItems={"center"} spacing={2}>
             <Button
               onClick={() => {
@@ -262,7 +249,11 @@ const Contact = ({ toggleContact, updateSidebarType }) => {
         <BlockDialog open={openBlock} handleClose={handleCloseBlock} />
       )}
       {openDelete && (
-        <DeleteChatDialog open={openDelete} handleClose={handleCloseDelete} />
+        <DeleteChatDialog
+          open={openDelete}
+          handleClose={handleCloseDelete}
+          conversationId
+        />
       )}
     </Box>
   );

@@ -18,7 +18,6 @@ import FormProvider, { RHFTextField } from "../../components/hook-form";
 import { Eye, EyeSlash } from "phosphor-react";
 import { RegisterUser } from "../../redux/slices/auth";
 import { useDispatch, useSelector } from "react-redux";
-
 const RegisterForm = () => {
   const { isLoading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -53,19 +52,23 @@ const RegisterForm = () => {
     formState: { errors },
   } = methods;
 
-  const onSubmit = (data) => {
-    try {
-      // submit data to backend
-      dispatch(RegisterUser(data));
-    } catch (error) {
-      console.error(error);
-      reset();
-      setError("afterSubmit", {
-        ...error,
-        message: error.message,
-      });
-    }
-  };
+  const onSubmit = async (data) => {
+  try {
+    // Submit data to backend by dispatching the RegisterUser action
+    await dispatch(RegisterUser(data));
+    // Redirect to the login page after successful registration
+    window.location.href = "/login";
+  } catch (error) {
+    console.error(error);
+    // If there's an error, set the error message without redirecting
+    reset();
+    setError("afterSubmit", {
+      type: "server",
+      message: error.response.data.message || "Something went wrong. Please try again.",
+    });
+  }
+};
+
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -95,7 +98,6 @@ const RegisterForm = () => {
             ),
           }}
         />{" "}
-       
         <Button
           fullWidth
           color="inherit"

@@ -34,7 +34,7 @@ const Profile = () => {
               </IconButton>
               <Typography variant="h5">Profile</Typography>
             </Stack>
-            {/* Profile Edit Form <ProfileForm />*/}
+            {/* Profile Edit Form */}
             <ProfileForm />
           </Stack>
         </Box>

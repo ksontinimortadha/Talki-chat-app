@@ -20,6 +20,9 @@ import Friends from "../../sections/main/Friends";
 import { socket } from "../../socket";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchDirectConversations } from "../../redux/slices/conversation";
+import useResponsive from "../../hooks/useResponsive";
+import Sidebar from "../../layouts/dashboard/SideBar";
+import BottomNav from "../../layouts/dashboard/BottomNav";
 
 const user_id = window.localStorage.getItem("user_id");
 
@@ -52,6 +55,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Chats = () => {
+  const isDesktop = useResponsive("up", "md");
   const [OpenDialog, setOpenDialog] = useState(false);
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -79,7 +83,7 @@ const Chats = () => {
       <Box
         sx={{
           position: "relative",
-          width: 320,
+          width: isDesktop ? 320 : "100vw",
           backgroundColor:
             theme.palette.mode === "light"
               ? "#f8faff"
@@ -87,6 +91,10 @@ const Chats = () => {
           boxShadow: "0px 0px 2px rgba(0,0,0,0.25)",
         }}
       >
+        {!isDesktop && (
+          // SideBar
+          <BottomNav />
+        )}
         <Stack p={3} spacing={2} sx={{ height: "100vh" }}>
           <Stack
             direction="row"
@@ -101,9 +109,6 @@ const Chats = () => {
                 }}
               >
                 <User />
-              </IconButton>
-              <IconButton>
-                <CircleDashed />
               </IconButton>
             </Stack>
           </Stack>

@@ -162,7 +162,7 @@ const Footer = () => {
   const user_id = window.localStorage.getItem("user_id");
 
   const { current_conversation } = useSelector(
-    (state) => state.conversation.direct_chat
+    (state) => state.conversation.group_chat
   );
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
@@ -186,17 +186,21 @@ const Footer = () => {
     }
   }
   const [test, setTest] = useState(false);
-  const { conversations, current_messages } = useSelector(
-    (state) => state.conversation.direct_chat
+  const { group_conversations, current_messages } = useSelector(
+    (state) => state.conversation.group_chat
   );
   useEffect(() => {
-    const current = conversations.find((el) => el?.id === room_id);
+    const current = group_conversations.find((el) => el?.id === room_id);
 
-    socket.emit("get_messages", { conversation_id: current?.id }, (data) => {
-      dispatch(FetchCurrentMessages({ messages: data }));
+    socket.emit(
+      "get_messages",
+      { group_conversations_id: current?.id },
+      (data) => {
+        dispatch(FetchCurrentMessages({ messages: data }));
 
-      dispatch(SetCurrentConversation(current));
-    });
+        dispatch(SetCurrentConversation(current));
+      }
+    );
   }, [test]);
   return (
     <Box

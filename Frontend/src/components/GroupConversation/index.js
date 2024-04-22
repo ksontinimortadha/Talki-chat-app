@@ -5,20 +5,28 @@ import { Box, Stack, useTheme } from "@mui/material";
 import Message from "./Message";
 import { useSelector } from "react-redux";
 
-const Conversation = ({ toggleContact, toggleRoomId }) => {
+const GroupConversation = ({ toggleContact, toggleRoomId }) => {
   const theme = useTheme();
   const { current_messages } = useSelector(
-    (state) => state.conversation.direct_chat
+    (state) => state.conversation.group_chat
   );
-  const messageListRef = useRef(null);
+   const messageListRef = useRef(null);
 
   useEffect(() => {
     // Scroll to the bottom of the message list when new messages are added
     messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
-  }, [current_messages]);
+  }, [current_messages]); 
+
 
   return (
-    <Stack height={"100%"} maxHeight={"100vh"} width={"auto"}>
+    <Stack sx={{
+          height: "100%",
+          width: "100%",
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? "#f0f4fa"
+              : theme.palette.background.paper,
+        }}>
       {/*Chat header*/}
       <Header toggleContact={toggleContact} toggleRoomId={toggleRoomId} />
       {/*msg*/}
@@ -44,4 +52,4 @@ const Conversation = ({ toggleContact, toggleRoomId }) => {
   );
 };
 
-export default Conversation;
+export default GroupConversation;
