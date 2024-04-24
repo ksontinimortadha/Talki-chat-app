@@ -140,7 +140,6 @@ exports.verifyOTP = async (req, res, next) => {
 // User Login
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
-
   try {
     // Check if email and password are provided
     if (!email || !password) {

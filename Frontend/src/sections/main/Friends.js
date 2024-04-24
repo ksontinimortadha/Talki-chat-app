@@ -44,9 +44,13 @@ const FriendsList = () => {
 
   return (
     <>
-      {friends.map((el, idx) => {
-        return <FriendElement key={idx} {...el} />;
-      })}
+      {friends.length === 0 ? (
+        <Typography variant="subtitle1">No friends found</Typography>
+      ) : (
+        friends.map((el, idx) => {
+          return <FriendElement key={idx} {...el} />;
+        })
+      )}
     </>
   );
 };

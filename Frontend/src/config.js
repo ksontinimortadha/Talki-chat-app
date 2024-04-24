@@ -7,7 +7,7 @@ import { PATH_DASHBOARD } from "./routes/paths";
 export const BASE_URL = "http://localhost:300";
 
 export const defaultSettings = {
-  themeMode: "light",
+  themeMode: "light", 
   themeDirection: "ltr",
   themeContrast: "default",
   themeLayout: "horizontal",
