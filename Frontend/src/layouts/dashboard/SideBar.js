@@ -14,7 +14,6 @@ import { Gear } from "phosphor-react";
 import React, { useState } from "react";
 import { Nav_Buttons, Profile_Menu } from "../../data";
 import useSettings from "../../hooks/useSettings";
-import { faker } from "@faker-js/faker";
 import AntSwitch from "../../components/AntSwitch";
 import Logo from "../../assets/Images/logo.ico";
 import { useNavigate } from "react-router-dom";

@@ -2,23 +2,11 @@ import {
   Avatar,
   Box,
   Divider,
-  IconButton,
   Stack,
   Typography,
   useTheme,
 } from "@mui/material";
-import {
-  Bell,
-  CaretLeft,
-  Image,
-  Info,
-  Key,
-  Keyboard,
-  Lock,
-  Note,
-  PencilCircle,
-} from "phosphor-react";
-import { faker } from "@faker-js/faker";
+import { Keyboard, PencilCircle } from "phosphor-react";
 import React, { useEffect, useState } from "react";
 import Shortcuts from "../../sections/settings/Shortcuts";
 import ThemeDialog from "../../sections/settings/ThemeDialog";
@@ -62,7 +50,7 @@ const Settings = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(FetchUserProfile());
-  }, []);
+  }, [dispatch]);
   const { user } = useSelector((state) => state.app);
 
   return (
@@ -84,14 +72,15 @@ const Settings = () => {
           <Stack p={4} spacing={5}>
             {/*header */}
             <Stack direction={"row"} alignItems={"center"} spacing={3}>
-              <IconButton>
-                <CaretLeft size={24} color="#4b4b4b" />
-              </IconButton>
               <Typography variant="h6">Settings</Typography>
             </Stack>
             {/*profile */}
             <Stack direction={"row"} spacing={3}>
-              <Avatar sx={{ width: 56, height: 56 }} src={user.img} alt={user.firstName} />
+              <Avatar
+                sx={{ width: 56, height: 56 }}
+                src={user.img}
+                alt={user.firstName}
+              />
               <Stack spacing={0}>
                 <Typography variant="article">
                   {user.firstName} {user.lastName}

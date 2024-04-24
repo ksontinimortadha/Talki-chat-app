@@ -1,5 +1,4 @@
-import { Box, IconButton, Stack, Typography } from "@mui/material";
-import { CaretLeft } from "phosphor-react";
+import { Box, Stack, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import ProfileForm from "../../sections/settings/ProfileForm";
 import { useDispatch } from "react-redux";
@@ -10,7 +9,7 @@ const Profile = () => {
 
   useEffect(() => {
     dispatch(FetchUserProfile());
-  }, []);
+  }, [dispatch]);
   return (
     <>
       <Stack direction="row" sx={{ width: "100%" }}>
@@ -29,9 +28,6 @@ const Profile = () => {
           <Stack p={4} spacing={5}>
             {/* Header */}
             <Stack direction="row" alignItems={"center"} spacing={3}>
-              <IconButton>
-                <CaretLeft size={24} color={"#4B4B4B"} />
-              </IconButton>
               <Typography variant="h5">Profile</Typography>
             </Stack>
             {/* Profile Edit Form */}

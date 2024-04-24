@@ -23,8 +23,8 @@ function App() {
   return (
     <>
       <ThemeProvider>
-          {" "}
-          <Router />{" "}
+        {" "}
+        <Router />{" "}
       </ThemeProvider>
 
       {message && open ? (

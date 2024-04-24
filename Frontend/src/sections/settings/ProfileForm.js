@@ -1,15 +1,15 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormProvider from "../../components/hook-form/FormProvider";
 import { Button, Stack } from "@mui/material";
 import { RHFTextField } from "../../components/hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const ProfileForm = () => {
-   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.app);
+  const [setError] = useState(null);
 
   const ProfileSchema = Yup.object().shape({
     firstName: Yup.string().required("First Name is required"),
@@ -29,49 +29,7 @@ const ProfileForm = () => {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    control,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting, isSubmitSuccessful },
-  } = methods;
-
-  const values = watch();
-
-  /* const onSubmit = async (data) => {
-    try {
-      //   Send API request
-      console.log("DATA", data);
-      dispatch(
-        UpdateUserProfile({
-          firstName: data?.firstName,
-          about: data?.about,
-          avatar: file,
-        })
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  }; */
-
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-
-      setFile(file);
-
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
-      if (file) {
-        setValue("avatar", newFile, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
+  const { reset, handleSubmit } = methods;
 
   const onSubmit = (data) => {
     try {

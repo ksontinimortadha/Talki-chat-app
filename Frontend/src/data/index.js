@@ -3,10 +3,8 @@ import {
   ChatCircleDots,
   Gear,
   GearSix,
-  Phone,
   SignOut,
   User,
-  Users,
   UsersFour,
 } from "phosphor-react";
 

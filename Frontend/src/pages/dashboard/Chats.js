@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import {
   ArchiveBox,
-  CircleDashed,
   MagnifyingGlass,
   User,
 } from "phosphor-react";
@@ -21,7 +20,6 @@ import { socket } from "../../socket";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchDirectConversations } from "../../redux/slices/conversation";
 import useResponsive from "../../hooks/useResponsive";
-import Sidebar from "../../layouts/dashboard/SideBar";
 import BottomNav from "../../layouts/dashboard/BottomNav";
 
 const user_id = window.localStorage.getItem("user_id");

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Box, Stack, useTheme } from "@mui/material";
@@ -10,23 +10,24 @@ const GroupConversation = ({ toggleContact, toggleRoomId }) => {
   const { current_messages } = useSelector(
     (state) => state.conversation.group_chat
   );
-   const messageListRef = useRef(null);
+  const messageListRef = useRef(null);
 
   useEffect(() => {
     // Scroll to the bottom of the message list when new messages are added
     messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
-  }, [current_messages]); 
-
+  }, [current_messages]);
 
   return (
-    <Stack sx={{
-          height: "100%",
-          width: "100%",
-          backgroundColor:
-            theme.palette.mode === "light"
-              ? "#f0f4fa"
-              : theme.palette.background.paper,
-        }}>
+    <Stack
+      sx={{
+        height: "100%",
+        width: "100%",
+        backgroundColor:
+          theme.palette.mode === "light"
+            ? "#f0f4fa"
+            : theme.palette.background.paper,
+      }}
+    >
       {/*Chat header*/}
       <Header toggleContact={toggleContact} toggleRoomId={toggleRoomId} />
       {/*msg*/}

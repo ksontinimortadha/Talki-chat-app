@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Chip,
   Dialog,
   DialogContent,
@@ -11,11 +10,10 @@ import {
   Select,
   Slide,
   Stack,
-  TextField,
 } from "@mui/material";
 
 import { useForm, FormProvider } from "react-hook-form";
-import React, { useEffect } from "react";
+import React from "react";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RHFTextField from "../../components/hook-form/RHFTextField";
@@ -42,7 +40,6 @@ const CreateGroupForm = ({ handleClose, socket }) => {
     defaultValues,
   });
 
-  const { handleSubmit } = methods;
 
   const { friends } = useSelector((state) => state.app);
 

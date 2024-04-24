@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   DocMsg,
   LinkMsg,
@@ -10,20 +10,15 @@ import {
 } from "./MsgTypes";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  FetchCurrentMessages,
-  FetchGroupConversations,
   FetchGroupMessages,
-  SetCurrentConversation,
   SetCurrentGroupConversation,
 } from "../../redux/slices/conversation";
 import { socket } from "../../socket";
-const user_id = localStorage.getItem("user_id");
 
 const Message = (menu) => {
-  const [messageIdToDelete, setMessageIdToDelete] = useState(null);
   const dispatch = useDispatch();
 
-  const { group_conversations, current_messages } = useSelector(
+  const { group_conversations } = useSelector(
     (state) => state.conversation.group_chat
   );
   const { room_id } = useSelector((state) => state.app);
@@ -40,7 +35,7 @@ const Message = (menu) => {
     );
 
     dispatch(SetCurrentGroupConversation(current));
-  }, [dispatch]);
+  }, [dispatch, group_conversations, room_id]);
   return (
     <>
       <Box p={3}>

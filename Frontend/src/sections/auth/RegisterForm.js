@@ -10,7 +10,6 @@ import {
   IconButton,
   InputAdornment,
   Button,
-  Input,
 } from "@mui/material";
 
 // components
@@ -53,22 +52,23 @@ const RegisterForm = () => {
   } = methods;
 
   const onSubmit = async (data) => {
-  try {
-    // Submit data to backend by dispatching the RegisterUser action
-    await dispatch(RegisterUser(data));
-    // Redirect to the login page after successful registration
-    window.location.href = "/login";
-  } catch (error) {
-    console.error(error);
-    // If there's an error, set the error message without redirecting
-    reset();
-    setError("afterSubmit", {
-      type: "server",
-      message: error.response.data.message || "Something went wrong. Please try again.",
-    });
-  }
-};
-
+    try {
+      // Submit data to backend by dispatching the RegisterUser action
+      await dispatch(RegisterUser(data));
+      // Redirect to the login page after successful registration
+      window.location.href = "/login";
+    } catch (error) {
+      console.error(error);
+      // If there's an error, set the error message without redirecting
+      reset();
+      setError("afterSubmit", {
+        type: "server",
+        message:
+          error.response.data.message ||
+          "Something went wrong. Please try again.",
+      });
+    }
+  };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>

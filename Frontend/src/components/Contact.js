@@ -14,16 +14,7 @@ import {
   DialogActions,
   Slide,
 } from "@mui/material";
-import {
-  X,
-  Phone,
-  VideoCamera,
-  CaretRight,
-  Star,
-  Bell,
-  Prohibit,
-  Trash,
-} from "phosphor-react";
+import { X, Phone, VideoCamera, Bell, Prohibit, Trash } from "phosphor-react";
 import React, { useState } from "react";
 import AntSwitch from "./AntSwitch";
 import { useSelector } from "react-redux";
@@ -60,12 +51,6 @@ const DeleteChatDialog = ({ open, handleClose }) => {
   const { current_conversation } = useSelector(
     (state) => state.conversation.direct_chat
   );
-  const [conversationIdToDelete, setConversationIdToDelete] = useState(null);
-
-  // Function to handle setting conversation ID to delete
-  const handleSetConversationIdToDelete = (conversationId) => {
-    setConversationIdToDelete(conversationId);
-  };
 
   const handleDeleteChat = (conversationId) => {
     if (conversationId) {

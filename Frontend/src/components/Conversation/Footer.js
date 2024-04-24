@@ -24,11 +24,9 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../socket";
-import { current } from "@reduxjs/toolkit";
 import {
   FetchCurrentMessages,
   SetCurrentConversation,
-  UpdateDirectConversation,
 } from "../../redux/slices/conversation";
 
 const StyledInput = styled(TextField)(({ theme }) => ({
@@ -79,11 +77,6 @@ const ChatInput = ({
   inputRef,
 }) => {
   const [openActions, setOpenActions] = React.useState(false);
-
-  //------------------------------------
-
-  const [test, setTest] = useState(false);
-  //------------------------------------
 
   return (
     <StyledInput
@@ -186,7 +179,7 @@ const Footer = () => {
     }
   }
   const [test, setTest] = useState(false);
-  const { conversations, current_messages } = useSelector(
+  const { conversations } = useSelector(
     (state) => state.conversation.direct_chat
   );
   useEffect(() => {
@@ -197,7 +190,7 @@ const Footer = () => {
 
       dispatch(SetCurrentConversation(current));
     });
-  }, [test]);
+  }, [test, conversations, dispatch, room_id]);
   return (
     <Box
       p={2}
@@ -255,14 +248,17 @@ const Footer = () => {
           >
             <IconButton
               onClick={() => {
-                socket.emit("text_message", {
-                  message: value,
-                  conversation_id: room_id,
-                  from: user_id,
-                  to: current_conversation.user_id,
-                  type: containsUrl(value) ? "Link" : "Text",
-                },(s)=>setTest(!test));
-                
+                socket.emit(
+                  "text_message",
+                  {
+                    message: value,
+                    conversation_id: room_id,
+                    from: user_id,
+                    to: current_conversation.user_id,
+                    type: containsUrl(value) ? "Link" : "Text",
+                  },
+                  (s) => setTest(!test)
+                );
               }}
             >
               <PaperPlaneTilt color="white" />

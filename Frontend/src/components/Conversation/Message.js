@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   DocMsg,
   LinkMsg,
@@ -16,13 +16,12 @@ import {
 import { socket } from "../../socket";
 
 const Message = (menu) => {
-  const [messageIdToDelete, setMessageIdToDelete] = useState(null);
   const dispatch = useDispatch();
 
   const { conversations, current_messages } = useSelector(
     (state) => state.conversation.direct_chat
   );
-  
+
   const { room_id } = useSelector((state) => state.app);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ const Message = (menu) => {
     });
 
     dispatch(SetCurrentConversation(current));
-  }, []);
+  }, [conversations, dispatch, room_id]);
   return (
     <>
       <Box p={3}>

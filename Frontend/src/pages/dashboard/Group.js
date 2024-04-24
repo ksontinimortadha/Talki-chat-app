@@ -32,7 +32,7 @@ const Group = () => {
 
   const { room_id, chat_type } = useSelector((state) => state.app);
   const [showContact, setShowContact] = useState(false);
-  const [sidebarType, setSidebarType] = useState("CONTACT");
+  const [sidebarType] = useState("CONTACT");
 
   const toggleContact = () => {
     setShowContact(!showContact);

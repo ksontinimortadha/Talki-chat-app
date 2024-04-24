@@ -28,7 +28,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     dispatch(FetchUserProfile());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     // Connect to Socket.IO if socket doesn't exist

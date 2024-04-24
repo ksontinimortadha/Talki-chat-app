@@ -1,4 +1,5 @@
 import { CloseIcon } from './CustomIcons';
+import React from "react";
 
 // ----------------------------------------------------------------------
 

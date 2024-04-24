@@ -12,7 +12,6 @@ import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from "phosphor-react";
 import StyledBadge from "../StyledBadge";
 import { useSelector } from "react-redux";
 
-const user_id = localStorage.getItem("user_id");
 
 const Header = ({ toggleContact, toggleRoomId }) => {
   const theme = useTheme();

@@ -241,9 +241,9 @@ const Timeline = ({ el }) => {
 const MessageOption = ({ messageId }) => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [messageDeleted, setMessageDeleted] = useState(false);
+  const [setMessageDeleted] = useState(false);
   const [test, setTest] = useState(false);
-  const { conversations, current_messages } = useSelector(
+  const { conversations } = useSelector(
     (state) => state.conversation.direct_chat
   );
   const { room_id } = useSelector((state) => state.app);
@@ -265,7 +265,7 @@ const MessageOption = ({ messageId }) => {
 
       dispatch(SetCurrentConversation(current));
     });
-  }, [test]);
+  }, [test, conversations, dispatch, room_id]);
 
   const handleDeleteMessage = () => {
     socket.emit("delete_message", messageId, (response) => {

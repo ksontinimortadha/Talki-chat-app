@@ -6,12 +6,10 @@ import {
   Avatar,
   Typography,
   IconButton,
-  Button,
 } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import { Chat, Spinner, UserCircleMinus, UserCirclePlus } from "phosphor-react";
 import { socket } from "../socket";
-import { v4 as uuidv4 } from "uuid";
 const user_id = localStorage.getItem("user_id");
 
 const StyledChatBox = styled(Box)(({ theme }) => ({

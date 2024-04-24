@@ -15,6 +15,7 @@ import typography from "./typography";
 import breakpoints from "./breakpoints";
 import componentsOverride from "./overrides";
 import shadows, { customShadows } from "./shadows";
+import React from "react";
 
 // ----------------------------------------------------------------------
 
