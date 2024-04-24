@@ -3,7 +3,7 @@ import io from "socket.io-client";
 let socket;
 
 const connectSocket = (user_id) => {
-  socket = io("http://localhost:300", {
+  socket = io("https://talki-chat-app.onrender.com", {
     query: `user_id=${user_id}`,
   });
 };
