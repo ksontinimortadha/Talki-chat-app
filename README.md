@@ -1,6 +1,6 @@
-# Talk Chat App  
+# Talki Chat App  
 
-Welcome to the **Talk Chat App** GitHub repository! This project is a real-time messaging application developed using the **MERN** stack (MongoDB, Express.js, React, Node.js).  
+Welcome to the **Talki Chat App** GitHub repository! This project is a real-time messaging application developed using the **MERN** stack (MongoDB, Express.js, React, Node.js).  
 
 ## Features  
 - 💬 **Real-Time Messaging:** Instant communication using WebSocket (via Socket.io).  
